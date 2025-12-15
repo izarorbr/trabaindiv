@@ -95,7 +95,13 @@ def contar_soluciones(nonograma):
 
     def es_valido(grilla, indice_fila, candidato):
         for indice_col in range(n_columnas):
+
+         # Si el candidato no tiene esa columna, es inválido
+            if indice_col >= len(candidato):
+                return False
+
             col = [grilla[r][indice_col] for r in range(indice_fila)] + [candidato[indice_col]]
+
             pistas_col = columnas[indice_col]
             bloques = []
             contador = 0
@@ -186,13 +192,18 @@ def mostrar_nonograma(nonograma):
 
 # Bucle principal para generar nonogramas con solución única
 def generar_nonograma_unico(dificultad):
+    """
+    Genera un nonograma que tiene exactamente UNA solución.
+    No devuelve nada hasta encontrar uno válido.
+    """
+
     while True:
         matriz, pistas_filas, pistas_columnas = generar_puzzle_por_dificultad(dificultad)
-        nonograma = {'rows': pistas_filas, 'cols': pistas_columnas}
-        soluciones = contar_soluciones(nonograma)
-        if soluciones == 1:
-            print(f"Nonograma de dificultad '{dificultad}' con solución única encontrado:")
-            mostrar_nonograma(nonograma)
+        nonograma = {
+            'rows': pistas_filas,
+            'cols': pistas_columnas
+        }
+
+        numero_soluciones = contar_soluciones(nonograma)
+        if numero_soluciones == 1:
             return matriz, pistas_filas, pistas_columnas
-        else:
-            print("Nonograma descartado (más de una solución o ninguna). Generando otro...")

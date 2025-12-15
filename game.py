@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import time
 import random
-from puzzles import generar_pistas, generar_puzzle_por_dificultad
+from puzzles import generar_nonograma_unico 
 from ranking import cargar_ranking, guardar_ranking
 
 class NonogramGame: # Clase principal del juego Nonograma
@@ -44,7 +44,7 @@ class NonogramGame: # Clase principal del juego Nonograma
 
     def iniciar_juego(self, dificultad): # Inicializa un nuevo juego con la dificultad seleccionada
         self.dificultad = dificultad
-        self.matriz_solucion, self.pistas_filas, self.pistas_columnas = generar_puzzle_por_dificultad(dificultad) # Establece la matriz solución y las pistas
+        self.matriz_solucion, self.pistas_filas, self.pistas_columnas = generar_nonograma_unico(dificultad) # Establece la matriz solución y las pistas
         self.dim = len(self.matriz_solucion) # Dimensión del nonograma
         self.matriz_usuario = [[0]*self.dim for _ in range(self.dim)] # Matriz del usuario inicializada a 0 (vacío)
         self.dibujar_tablero() 
@@ -85,6 +85,7 @@ class NonogramGame: # Clase principal del juego Nonograma
                 anchor='c'  # Anchor alinea el texto a la derecha
             ).grid(row=i, column=0) 
                     # Justify alinea el texto al centro, relief define el estilo del borde del widget, borderwidth es el grosor del borde
+       
         # Cuadrícula de juego
         frame_juego = tk.Frame(frame_principal); frame_juego.grid(row=1, column=1) # Contenedor para la cuadrícula del juego
         self.celdas_gui = [] # Lista para almacenar los botones de las celdas
@@ -92,12 +93,13 @@ class NonogramGame: # Clase principal del juego Nonograma
             fila = []
             for j in range(self.dim): # Itera sobre cada columna
                 btn = tk.Button(frame_juego, width=self.CELL_WIDTH, height=self.CELL_HEIGHT,
-                                command=lambda r=i, c=j: self.manejar_click(r,c), relief="solid", bd=1, bg='white', padx=0, pady=0, highlightthickness=0, takefocus=0) # Crea un botón para cada celda
+                                command=lambda r=i, c=j: self.manejar_click(r,c), relief="solid", bd=1, bg='white', padx=0, pady=0, highlightthickness=0, takefocus=False) # Crea un botón para cada celda
                 btn.bind("<FocusIn>", lambda e, r=i, c=j: self.actualizar_celda_seleccionada(r,c)) # Bind asocia un evento a una función, en este caso cuando el botón recibe el foco se actualiza la celda seleccionada
                 btn.grid(row=i,column=j) # Coloca el botón en la cuadrícula
                 fila.append(btn) # Añade el botón a la fila
             self.celdas_gui.append(fila) # Añade la fila a la lista de celdas GUI
-        if self.dim>0: self.celdas_gui[0][0].focus_set(); self.celda_seleccionada=(0,0) # Establece el foco inicial en la primera celda
+        #if self.dim>0:
+            #self.celdas_gui[0][0].focus_set(); self.celda_seleccionada=(0,0) # Establece el foco inicial en la primera celda
 
         # Controles y cronómetro con sus colores, fuentes y estilos
         frame_controles = tk.Frame(self.master); frame_controles.pack(pady=10) # Contenedor para los botones de control
