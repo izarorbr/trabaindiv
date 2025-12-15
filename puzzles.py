@@ -184,7 +184,7 @@ def mostrar_nonograma(nonograma):
     for fila in grilla:
         print(''.join('█' if c else ' ' for c in fila))
 
-# --- Bucle principal para generar nonogramas con solución única ---
+# Bucle principal para generar nonogramas con solución única
 def generar_nonograma_unico(dificultad):
     while True:
         matriz, pistas_filas, pistas_columnas = generar_puzzle_por_dificultad(dificultad)
