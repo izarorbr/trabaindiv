@@ -71,5 +71,128 @@ def generar_puzzle_por_dificultad(dificultad): # Devuelve un nonograma según la
     elif dificultad == 'dificil':
         return generar_nonograma_aleatorio(9, densidad=0.5)
     else:
-        raise ValueError(f"Dificultad desconocida: {dificultad}")
+        raise ValueError(f"Dificultad desconocida: {dificultad}") # Maneja la dificultad desconocida
     
+    # --- Funciones de comprobación de soluciones únicas ---
+def contar_soluciones(nonograma):
+    """
+    Cuenta cuántas soluciones tiene un nonograma.
+    Devuelve el número de soluciones.
+    """
+    filas = nonograma['rows']
+    columnas = nonograma['cols']
+    n_filas = len(filas)
+    n_columnas = len(columnas)
+
+    def generar_fila(longitud, pistas):
+        if not pistas:
+            yield [0]*longitud
+            return
+        primero, *resto = pistas
+        for prefijo in range(longitud - sum(pistas) - len(pistas) + 2):
+            for sufijo in generar_fila(longitud - prefijo - primero - 1, resto):
+                yield [0]*prefijo + [1]*primero + ([0] if resto else []) + sufijo
+
+    def es_valido(grilla, indice_fila, candidato):
+        for indice_col in range(n_columnas):
+            col = [grilla[r][indice_col] for r in range(indice_fila)] + [candidato[indice_col]]
+            pistas_col = columnas[indice_col]
+            bloques = []
+            contador = 0
+            for celda in col:
+                if celda == 1:
+                    contador += 1
+                elif contador > 0:
+                    bloques.append(contador)
+                    contador = 0
+            if contador > 0:
+                bloques.append(contador)
+            if any(b > c for b, c in zip(bloques, pistas_col)):
+                return False
+            if len(bloques) > len(pistas_col):
+                return False
+        return True
+
+    soluciones = 0
+    grilla = [[0]*n_columnas for _ in range(n_filas)]
+
+    def backtrack(indice_fila):
+        nonlocal soluciones
+        if soluciones > 1:
+            return
+        if indice_fila == n_filas:
+            soluciones += 1
+            return
+        for candidato in generar_fila(n_columnas, filas[indice_fila]):
+            if es_valido(grilla, indice_fila, candidato):
+                grilla[indice_fila] = candidato
+                backtrack(indice_fila + 1)
+                grilla[indice_fila] = [0]*n_columnas
+
+    backtrack(0)
+    return soluciones
+
+def mostrar_nonograma(nonograma):
+    """
+    Muestra la solución del nonograma en consola con bloques █ para las celdas rellenas.
+    """
+    n_filas = len(nonograma['rows'])
+    n_columnas = len(nonograma['cols'])
+    grilla = [[0]*n_columnas for _ in range(n_filas)]
+
+    def generar_fila(longitud, pistas):
+        if not pistas:
+            yield [0]*longitud
+            return
+        primero, *resto = pistas
+        for prefijo in range(longitud - sum(pistas) - len(pistas) + 2):
+            for sufijo in generar_fila(longitud - prefijo - primero - 1, resto):
+                yield [0]*prefijo + [1]*primero + ([0] if resto else []) + sufijo
+
+    def es_valido(grilla, indice_fila, candidato):
+        for indice_col in range(n_columnas):
+            col = [grilla[r][indice_col] for r in range(indice_fila)] + [candidato[indice_col]]
+            pistas_col = nonograma['cols'][indice_col]
+            bloques = []
+            contador = 0
+            for celda in col:
+                if celda == 1:
+                    contador += 1
+                elif contador > 0:
+                    bloques.append(contador)
+                    contador = 0
+            if contador > 0:
+                bloques.append(contador)
+            if any(b > c for b, c in zip(bloques, pistas_col)):
+                return False
+            if len(bloques) > len(pistas_col):
+                return False
+        return True
+
+    def backtrack_solucion(indice_fila):
+        if indice_fila == n_filas:
+            return True
+        for candidato in generar_fila(n_columnas, nonograma['rows'][indice_fila]):
+            if es_valido(grilla, indice_fila, candidato):
+                grilla[indice_fila] = candidato
+                if backtrack_solucion(indice_fila + 1):
+                    return True
+                grilla[indice_fila] = [0]*n_columnas
+        return False
+
+    backtrack_solucion(0)
+    for fila in grilla:
+        print(''.join('█' if c else ' ' for c in fila))
+
+# --- Bucle principal para generar nonogramas con solución única ---
+def generar_nonograma_unico(dificultad):
+    while True:
+        matriz, pistas_filas, pistas_columnas = generar_puzzle_por_dificultad(dificultad)
+        nonograma = {'rows': pistas_filas, 'cols': pistas_columnas}
+        soluciones = contar_soluciones(nonograma)
+        if soluciones == 1:
+            print(f"Nonograma de dificultad '{dificultad}' con solución única encontrado:")
+            mostrar_nonograma(nonograma)
+            return matriz, pistas_filas, pistas_columnas
+        else:
+            print("Nonograma descartado (más de una solución o ninguna). Generando otro...")

@@ -61,17 +61,29 @@ class NonogramGame: # Clase principal del juego Nonograma
         max_len_col = max(len(p) for p in self.pistas_columnas) # Longitud máxima de pistas de columnas
         frame_col_pistas = tk.Frame(frame_principal); frame_col_pistas.grid(row=0, column=1) # Grid es un gestor de geometría que organiza los widgets en una tabla
         for j in range(self.dim): 
-            tk.Label(frame_col_pistas, text='\n'.join(map(str, self.pistas_columnas[j])), # Une las pistas con saltos de línea
-                     width=self.CELL_WIDTH//1, height=max_len_col*self.CELL_HEIGHT//1, # Ancho y alto de la celda
-                     borderwidth=1, relief="solid", bg='#f0f0f0', justify=tk.CENTER).grid(row=0, column=j) 
+            tk.Label(
+                frame_col_pistas,
+                text='\n'.join(map(str, self.pistas_columnas[j])), # Une las pistas con saltos de línea
+                width=self.CELL_WIDTH,
+                height=max_len_col*self.CELL_HEIGHT, # Ancho y alto de la celda
+                borderwidth=1, 
+                relief="solid", 
+                bg='#f0f0f0', 
+                justify=tk.CENTER
+            ).grid(row=0, column=j) 
                     # Justify alinea el texto al centro, relief define el estilo del borde del widget, borderwidth es el grosor del borde
         # Pistas de filas
         max_len_row = max(len(p) for p in self.pistas_filas) # Longitud máxima de pistas de filas
         frame_row_pistas = tk.Frame(frame_principal); frame_row_pistas.grid(row=1, column=0) # Frame es un contenedor para otros widgets
         for i in range(self.dim): # Itera sobre cada fila 
-            tk.Label(frame_row_pistas, text=' '.join(map(str, self.pistas_filas[i])), # Une las pistas con espacios
-                     width=max_len_row*self.CELL_WIDTH, height=self.CELL_HEIGHT,
-                     borderwidth=1, relief="solid", bg='#f0f0f0', justify=tk.CENTER).grid(row=i, column=0) 
+            tk.Label(frame_row_pistas, 
+                text=' '.join(map(str, self.pistas_filas[i])), # Une las pistas con espacios
+                width=max_len_row*self.CELL_WIDTH, 
+                height=self.CELL_HEIGHT,
+                borderwidth=1, relief="solid", 
+                bg='#f0f0f0', 
+                anchor='c'  # Anchor alinea el texto a la derecha
+            ).grid(row=i, column=0) 
                     # Justify alinea el texto al centro, relief define el estilo del borde del widget, borderwidth es el grosor del borde
         # Cuadrícula de juego
         frame_juego = tk.Frame(frame_principal); frame_juego.grid(row=1, column=1) # Contenedor para la cuadrícula del juego
@@ -80,7 +92,7 @@ class NonogramGame: # Clase principal del juego Nonograma
             fila = []
             for j in range(self.dim): # Itera sobre cada columna
                 btn = tk.Button(frame_juego, width=self.CELL_WIDTH, height=self.CELL_HEIGHT,
-                                command=lambda r=i, c=j: self.manejar_click(r,c), relief="raised", bd=1, bg='white')
+                                command=lambda r=i, c=j: self.manejar_click(r,c), relief="solid", bd=1, bg='white', padx=0, pady=0, highlightthickness=0, takefocus=0) # Crea un botón para cada celda
                 btn.bind("<FocusIn>", lambda e, r=i, c=j: self.actualizar_celda_seleccionada(r,c)) # Bind asocia un evento a una función, en este caso cuando el botón recibe el foco se actualiza la celda seleccionada
                 btn.grid(row=i,column=j) # Coloca el botón en la cuadrícula
                 fila.append(btn) # Añade el botón a la fila
@@ -107,7 +119,7 @@ class NonogramGame: # Clase principal del juego Nonograma
     def actualizar_celda_gui(self, fila, col):
         estado=self.matriz_usuario[fila][col]; btn=self.celdas_gui[fila][col] # Obtiene el estado de la celda y el botón correspondiente
         if estado==1: btn.config(bg='black', text='', relief="sunken") # Configura el botón para celda rellena
-        elif estado==2: btn.config(bg='white', text='X', fg='red', font=('Century',8,'bold'), relief="raised") # Configura el botón para celda marcada con X
+        elif estado==2: btn.config(bg='white', text='✕', fg='red', font=('Century',8), padx=0, pady=0) # Configura el botón para celda marcada con X
         else: btn.config(bg='white', text='', relief="raised") # Configura el botón para celda vacía
 
 
