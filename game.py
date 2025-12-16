@@ -118,7 +118,7 @@ class NonogramGame: # Clase principal del juego Nonograma
         self.celda_seleccionada=(fila,col) # Actualiza la celda seleccionada
         if self.matriz_usuario[fila][col]==1: self.comprobar_victoria() # Comprueba si el jugador ha ganado tras rellenar una celda
 
-    def actualizar_celda_gui(self, fila, col):
+    def actualizar_celda_gui(self, fila, col): 
         estado=self.matriz_usuario[fila][col]; btn=self.celdas_gui[fila][col] # Obtiene el estado de la celda y el botón correspondiente
         if estado==1: btn.config(bg='black', text='', relief="sunken") # Configura el botón para celda rellena
         elif estado==2: btn.config(bg='white', text='✕', fg='red', font=('Century',8), padx=0, pady=0) # Configura el botón para celda marcada con X
