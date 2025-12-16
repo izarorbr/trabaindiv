@@ -30,3 +30,4 @@ def guardar_ranking(dificultad, nombre, tiempo): # Guarda una nueva entrada en e
                 f.write(f"{entrada['nombre']},{entrada['tiempo']}\n") # Escribe cada entrada en el archivo
     except IOError:
         messagebox.showerror("Error", f"No se pudo escribir en {nombre_archivo}") # Muestra un mensaje de error si no se puede escribir en el archivo
+        
